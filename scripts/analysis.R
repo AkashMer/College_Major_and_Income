@@ -178,7 +178,7 @@ which(p.adjust(summary(fitoutlier)$coef[-1,4], method = "BH") < 0.05)
 college[63,]
 # I dont think so
 
-dance_save(".college_major_analysis.rds")
+dance_save("./college_major_analysis.rds")
 dance_stop()
 
 ## -------------------------------------------------------------------------
@@ -210,3 +210,23 @@ summary(fit5)
 which(p.adjust(summary(fit5)$coef[-1,4], method = "BH") < 0.05)
 plot(fit5, which = 1)
 p.adjust(summary(fit)$coef[-1,4], method = "BH")[c(11,13,14)]
+
+hatvalues(fit)[order(hatvalues(fit), decreasing = TRUE)]
+hatdat <- data.frame(num = 1:nrow(medianIncomebyMajor), hatvalues = hatvalues(fit))
+ggplot(hatdat, aes(num, hatvalues)) + geom_point()
+
+cookdat <- data.frame(num = 1:nrow(medianIncomebyMajor), cookdist = cooks.distance(fit))
+ggplot(cookdat, aes(num, cookdist)) + geom_point()
+
+dfbetasdat <- data.frame(num = 1:nrow(medianIncomebyMajor), dfbetas = dfbetas(fit)[,11])
+ggplot(dfbetasdat, aes(num, dfbetas)) + geom_point()
+dfbetasdat <- data.frame(num = 1:nrow(medianIncomebyMajor), dfbetas = dfbetas(fit)[,13])
+ggplot(dfbetasdat, aes(num, dfbetas)) + geom_point()
+dfbetasdat <- data.frame(num = 1:nrow(medianIncomebyMajor), dfbetas = dfbetas(fit)[,14])
+ggplot(dfbetasdat, aes(num, dfbetas)) + geom_point()
+
+for(i in 1:16) {
+    dfbetasdat <- data.frame(num = 1:nrow(medianIncomebyMajor), dfbetas = dfbetas(fit)[,i])
+    with(dfbetasdat, plot(num, dfbetas))
+}
+# It does influence the model, but it cannot be ignored as well
